@@ -1,54 +1,74 @@
-import reactImg from './assets/react-core-concepts.png'
-import { CORE_CONCEPTS } from './data.js';
-
-const reactDescriptions = ['Fundamental', 'Crucial', 'Core'];
-
-function genRandomInt(max) {
-  return Math.floor(Math.random() * (max + 1));
-}
-
-function Header() {
-  const description = reactDescriptions[genRandomInt(2)];
-
-  return (
-    <header>
-      <img src={reactImg} alt="Stylized atom" />
-      <h1>React Essentials</h1>
-      <p>
-        {description} React concepts you will need for almost any app you are
-        going to build!
-      </p>
-    </header>
-  )
-}
-
-function CoreConcept({image, title, description}) {
-  return <li>
-    <img src={image} alt={title} />
-    <h3>{title}</h3>
-    <p>{description}</p>
-  </li>
-}
+import { useState } from "react";
+import { CORE_CONCEPTS } from "./data.js";
+import Header from "./components/Header/Header.jsx";
+import CoreConcept from "./components/CoreConcept.jsx";
+import TabButton from "./components/TabButton.jsx";
+import { EXAMPLES } from "./data.js";
 
 function App() {
+  const [selectedTopic, setSelectedTopic] = useState();
+
+  function handleClick(selectedButton) {
+    setSelectedTopic(selectedButton);
+    console.log(selectedButton);
+  }
+
+  let tabContent = <p>Please select a topic.</p>;
+
+  if (selectedTopic) {
+    tabContent = (
+      <div id="tab-content">
+        <h3>{EXAMPLES[selectedTopic].title}</h3>
+        <p>{EXAMPLES[selectedTopic].description}</p>
+        <pre>
+          <code>{EXAMPLES[selectedTopic].code}</code>
+        </pre>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Header />
       <section id="core-concepts">
+        <h2>Core Concepts</h2>
         <ul>
-          <CoreConcept title={CORE_CONCEPTS[0].title}
-            description={CORE_CONCEPTS[0].description}
-            image={CORE_CONCEPTS[0].image}
-          />
-
-          <CoreConcept {...CORE_CONCEPTS[1]} />
-          <CoreConcept {...CORE_CONCEPTS[2]} />
-          <CoreConcept {...CORE_CONCEPTS[3]} />
+          {CORE_CONCEPTS.map((conceptItem) => (
+            <CoreConcept key={conceptItem.title} {...conceptItem} />
+          ))}
         </ul>
       </section>
-      <main>
-
-      </main>
+      <section id="examples">
+        <h2>Examples</h2>
+        <menu>
+          <TabButton
+            isSelected={selectedTopic === "components"}
+            onClick={() => handleClick("components")}
+          >
+            Components
+          </TabButton>
+          <TabButton
+            isSelected={selectedTopic === "jsx"}
+            onClick={() => handleClick("jsx")}
+          >
+            JSX
+          </TabButton>
+          <TabButton
+            isSelected={selectedTopic === "props"}
+            onClick={() => handleClick("props")}
+          >
+            Props
+          </TabButton>
+          <TabButton
+            isSelected={selectedTopic === "state"}
+            onClick={() => handleClick("state")}
+          >
+            State
+          </TabButton>
+        </menu>
+        {tabContent}
+      </section>
+      <main></main>
     </div>
   );
 }
